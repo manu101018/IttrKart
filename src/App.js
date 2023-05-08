@@ -96,15 +96,24 @@ function App() {
               >
                 <i className="fas fa-bars"></i>
               </Button>
-
+                <div style={{ backgroundColor: "white",marginLeft:"2rem",marginRight:'1rem',borderRadius:"10px" }}>
+                  <img
+                    style={{ height: "4rem", width: "4rem" }}
+                    src={"http://localhost:4000/IttrkartLogo.svg"}
+                    alt=""
+                  />
+                </div>
               <LinkContainer to="/">
-                <Navbar.Brand>IttrKart</Navbar.Brand>
+                <Navbar.Brand>ITTKART</Navbar.Brand>
               </LinkContainer>
               <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Navbar.Collapse id="basic-navbar-nav">
                 <SearchBox />
-                <Nav className="me-auto  w-100  justify-content-end">
-                  <Link to="/cart" className="nav-link">
+                <Nav
+                  className="me-auto  w-100  justify-content-end"
+                  style={{ marginLeft: "-20rem" }}
+                >
+                  <Link to="/cart" className="nav-link" style={{color:"white"}}>
                     Cart
                     {cart.cartItems.length > 0 && (
                       <Badge pill bg="danger">
@@ -130,7 +139,7 @@ function App() {
                       </Link>
                     </NavDropdown>
                   ) : (
-                    <Link className="nav-link" to="/signin">
+                    <Link className="nav-link" to="/signin" style={{color:"white"}}>
                       Sign In
                     </Link>
                   )}
@@ -296,7 +305,11 @@ function App() {
               {/* Contact us Starts from here */}
               <div className="info_card">
                 <div className="ehsLogoWrappers">
-                  {/* <img className="EHS-logo" src={Logo} alt="Logo" /> */}
+                  <img
+                    className="EHS-logo"
+                    src={"http://localhost:4000/IttrkartLogo.svg"}
+                    alt="Logo"
+                  />
                 </div>
                 <h2>Contact Us</h2>
                 <p className="details">
@@ -349,29 +362,41 @@ function App() {
               {/* Products Starts from here */}
               <div className="info_card info_card2">
                 <h2>Products</h2>
-                <Link to="/">Ittr</Link> <br />
-                {/* <Link to="/signages">Signages</Link> <br />
-            <Link to="/floorgraphics">Floor Graphics</Link> <br />
-            <Link to="/assetmarkings">Asset Markings</Link> <br />
-            <Link to="/">Campaigns</Link> <br /> */}
-                {/* <Link to="/diy">Create Your Own</Link> */}
+                <Link to="/" style={{ color: "white" }}>
+                  Ittr
+                </Link>{" "}
+                <br />
               </div>
               {/* My Account Starts from here */}
               <div className="info_card info_card2">
                 <h2>My Account</h2>
-                <Link to="/profile">Profile</Link> <br />
-                <Link to="/orderhistory">Order History</Link> <br />
+                <Link to="/profile" style={{ color: "white" }}>
+                  Profile
+                </Link>{" "}
+                <br />
+                <Link to="/orderhistory" style={{ color: "white" }}>
+                  Order History
+                </Link>{" "}
+                <br />
                 {/* <Link to="/userdashboard/2">Order Tracking</Link> <br /> */}
-                {/* <Link to="/signup">Create an Account</Link> */}
               </div>
               {/* About Starts from here */}
               <div className="info_card info_card2">
                 <h2>About</h2>
-                <Link to="/privacypolicy">Privacy Policy</Link> <br />
+                <Link to="/privacypolicy" style={{ color: "white" }}>
+                  Privacy Policy
+                </Link>{" "}
+                <br />
                 {/* <Link to="/contact">Support</Link> <br /> */}
-                <Link to="/about">About Us</Link> <br />
+                <Link to="/about" style={{ color: "white" }}>
+                  About Us
+                </Link>{" "}
+                <br />
                 {/* <Link to="/">Refund &amp; Shipping Policy</Link> <br /> */}
-                <Link to="/terms">Terms &amp; Conditions</Link> <br />
+                <Link to="/terms" style={{ color: "white" }}>
+                  Terms &amp; Conditions
+                </Link>{" "}
+                <br />
                 {/* <Link to="/faqs">FAQs</Link> */}
               </div>
             </div>
