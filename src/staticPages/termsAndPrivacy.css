@@ -1,0 +1,51 @@
+.terms-conditions-container {
+  width: 85vw;
+  margin: auto;
+  margin-top: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.terms-conditions-container h1 {
+  text-align: center;
+  /*  */
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 22px;
+  /* line-height: 100%; */
+}
+.terms-conditions-container button {
+  width: 120px;
+  text-align: center;
+  background: #003459;
+  border: none;
+  margin-top: 30px;
+  padding: 5px;
+  font-weight: 600;
+  color: #fff;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 23px;
+}
+.terms-conditions-container .conditions .heading {
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  margin: 20px 0 10px 0 !important;
+}
+.terms-conditions-container .conditions .description {
+  text-align: left;
+  line-height: 17px;
+  font-size: 14px;
+  font-weight: 400;
+}
+.top-desc {
+  margin: 10px 0;
+}
+@media screen and (max-width: 900px) {
+  .terms-conditions-container .conditions .description {
+    text-align: justify;
+  }
+}
