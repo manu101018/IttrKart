@@ -39,6 +39,7 @@ export default function DashboardScreen() {
         const { data } = await axios.get('/api/orders/summary', {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
+        console.log(data)
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
         dispatch({
@@ -88,10 +89,9 @@ export default function DashboardScreen() {
               <Card>
                 <Card.Body>
                   <Card.Title>
-                    $
                     {summary.orders && summary.users[0]
                       ? summary.orders[0].totalSales.toFixed(2)
-                      : 0}
+                      : 0}/-
                   </Card.Title>
                   <Card.Text> Orders</Card.Text>
                 </Card.Body>
