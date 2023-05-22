@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useReducer,useState } from 'react';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -14,6 +14,7 @@ import MessageBox from '../components/MessageBox';
 import { Store } from '../Store';
 import { getError } from '../utils';
 import { toast } from 'react-toastify';
+import Stripe from 'stripe';
 
 function reducer(state, action) {
   switch (action.type) {
@@ -49,6 +50,7 @@ function reducer(state, action) {
   }
 }
 export default function OrderScreen() {
+  const [isPayed,SetisPayed]=useState(false);
   const { state } = useContext(Store);
   const { userInfo } = state;
 
@@ -180,11 +182,48 @@ export default function OrderScreen() {
         }
       );
       dispatch({ type: 'DELIVER_SUCCESS', payload: data });
-      toast.success('Order is delivered');
+      toast.success('Order is out for delivery');
     } catch (err) {
       toast.error(getError(err));
       dispatch({ type: 'DELIVER_FAIL' });
     }
+  };
+
+  const FormSubmitHndler = (event) => {
+    event.preventDefault();
+    SetisPayed(true);
+    // toast.success('Payment successfull');
+    const loadPaypalScript = async () => {
+      try {
+        dispatch({ type: 'PAY_REQUEST' });
+        const { data } = await axios.put(
+          `/api/orders/${order._id}/pay`,
+          {
+            id:order._id,
+            status:'Approved',
+            update_time:new Date().toLocaleString('en-GB'),
+            user:order.user
+          },
+          {
+            headers: { authorization: `Bearer ${userInfo.token}` },
+          }
+        );
+        dispatch({ type: 'PAY_SUCCESS', payload: data });
+        toast.success('Order is paid');
+      } catch (err) {
+        dispatch({ type: 'PAY_FAIL', payload: getError(err) });
+        toast.error(getError(err));
+      }
+    };
+    loadPaypalScript();
+  };
+
+  async function StripePayment() {
+    try {
+      var stripe = Stripe(
+        'pk_test_51NAcCUSIClwHNG6eOlKOlf745yegtW90nqRvSAXqUKSqI9kS2EwfySHSqIT60PlxPjUH4MyVCZ7G05q8lgDPLRD1003FV6hy6v'
+      );
+    } catch (err) {}
   }
 
   return loading ? (
@@ -220,11 +259,18 @@ export default function OrderScreen() {
               </Card.Text>
               {order.isDelivered ? (
                 <MessageBox variant="success">
-                  Delivered at {order.deliveredAt}
+                  Out for Delivery at {new Date().toLocaleString('en-GB')}
                 </MessageBox>
               ) : (
                 <MessageBox variant="danger">Not Delivered</MessageBox>
               )}
+              {/* {order.isDelivered ? (
+                <MessageBox variant="success">
+                  Delivered at {order.deliveredAt}
+                </MessageBox>
+              ) : (
+                <MessageBox variant="danger">Not Delivered</MessageBox>
+              )} */}
             </Card.Body>
           </Card>
           <Card className="mb-3">
@@ -233,13 +279,20 @@ export default function OrderScreen() {
               <Card.Text>
                 <strong>Method:</strong> {order.paymentMethod}
               </Card.Text>
-              {order.isPaid ? (
+              {isPayed ? (
+                <MessageBox variant="success">
+                  Paid at {new Date().toLocaleString('en-GB')}
+                </MessageBox>
+              ) : (
+                <MessageBox variant="danger">Not Paid</MessageBox>
+              )}
+              {/* {order.isPaid ? (
                 <MessageBox variant="success">
                   Paid at {order.paidAt}
                 </MessageBox>
               ) : (
                 <MessageBox variant="danger">Not Paid</MessageBox>
-              )}
+              )} */}
             </Card.Body>
           </Card>
 
@@ -252,7 +305,7 @@ export default function OrderScreen() {
                     <Row className="align-items-center">
                       <Col md={6}>
                         <img
-                          src={"http://localhost:4000/" + item.image}
+                          src={'http://localhost:4000/' + item.image}
                           alt={item.name}
                           className="img-fluid rounded img-thumbnail"
                         ></img>{' '}
@@ -307,18 +360,139 @@ export default function OrderScreen() {
                     {isPending ? (
                       <LoadingBox />
                     ) : (
-                      <div>
-                        <PayPalButtons
-                          createOrder={createOrder}
-                          onApprove={onApprove}
-                          onError={onError}
-                        ></PayPalButtons>
+                      // <div>
+                      //   <PayPalButtons
+                      //     createOrder={createOrder}
+                      //     onApprove={onApprove}
+                      //     onError={onError}
+                      //   ></PayPalButtons>
+                      // </div>
+                      <div
+                        style={{
+                          width: '400px',
+                          margin: '5px -24px',
+                          padding: '20px',
+                          border: '1px solid #ccc',
+                          backgroundColor: '#f9f9f9',
+                        }}
+                      >
+                        <h2 style={{ textAlign: 'center' }}>
+                          Card Information
+                        </h2>
+                        <form onSubmit={FormSubmitHndler}>
+                        {/* <form onSubmit={this.handleSubmit}> */}
+                          <label
+                            htmlFor="cardNumber"
+                            style={{ marginBottom: '10px', display: 'block' }}
+                          >
+                            Card Number:
+                          </label>
+                          <input
+                            type="text"
+                            id="cardNumber"
+                            name="cardNumber"
+                            placeholder="Enter card number"
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              border: '1px solid #ccc',
+                              borderRadius: '4px',
+                            }}
+                            // value={this.state.cardNumber}
+                            // onChange={this.handleChange}
+                            required
+                          />
+
+                          <label
+                            htmlFor="expireOn"
+                            style={{ marginBottom: '10px', display: 'block' }}
+                          >
+                            Expire On:
+                          </label>
+                          <input
+                            type="text"
+                            id="expireOn"
+                            name="expireOn"
+                            placeholder="MM/YY"
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              border: '1px solid #ccc',
+                              borderRadius: '4px',
+                            }}
+                            // value={this.state.expireOn}
+                            // onChange={this.handleChange}
+                            required
+                          />
+
+                          <label
+                            htmlFor="csv"
+                            style={{ marginBottom: '10px', display: 'block' }}
+                          >
+                            CSV:
+                          </label>
+                          <input
+                            type="text"
+                            id="csv"
+                            name="csv"
+                            placeholder="Enter CSV"
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              border: '1px solid #ccc',
+                              borderRadius: '4px',
+                            }}
+                            // value={this.state.csv}
+                            // onChange={this.handleChange}
+                            required
+                          />
+
+                          <label
+                            htmlFor="cardHolderName"
+                            style={{ marginBottom: '10px', display: 'block' }}
+                          >
+                            Card Holder Name:
+                          </label>
+                          <input
+                            type="text"
+                            id="cardHolderName"
+                            name="cardHolderName"
+                            placeholder="Enter card holder name"
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              border: '1px solid #ccc',
+                              borderRadius: '4px',
+                            }}
+                            // value={this.state.cardHolderName}
+                            // onChange={this.handleChange}
+                            required
+                          />
+
+                          {!isPayed && (<button
+                            type="submit"
+                            style={{
+                              backgroundColor: '#4CAF50',
+                              color: 'white',
+                              padding: '10px 20px',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontSize: '16px',
+                              marginTop: "20px"
+                            }}
+                          >Pay</button>)}
+                        </form>
                       </div>
+                      // <div>
+                      //   <PayButton type="button" onClick={StripePayment}>Pay</PayButton>
+                      //   <script scr="https://js.stripe.com/v3/"></script>
+                      // </div>
                     )}
                     {loadingPay && <LoadingBox></LoadingBox>}
                   </ListGroup.Item>
                 )}
-                {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                {userInfo.isAdmin && isPayed && !order.isDelivered && (
                   <ListGroup.Item>
                     {loadingDeliver && <LoadingBox></LoadingBox>}
                     <div className="d-grid">
@@ -328,6 +502,16 @@ export default function OrderScreen() {
                     </div>
                   </ListGroup.Item>
                 )}
+                {/* {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                  <ListGroup.Item>
+                    {loadingDeliver && <LoadingBox></LoadingBox>}
+                    <div className="d-grid">
+                      <Button type="button" onClick={deliverOrderHandler}>
+                        Deliver Order
+                      </Button>
+                    </div>
+                  </ListGroup.Item>
+                )} */}
               </ListGroup>
             </Card.Body>
           </Card>

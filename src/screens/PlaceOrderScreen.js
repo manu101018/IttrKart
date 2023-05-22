@@ -67,6 +67,7 @@ export default function PlaceOrderScreen() {
           },
         }
       );
+      console.log(data,'helo')
       ctxDispatch({ type: 'CART_CLEAR' });
       dispatch({ type: 'CREATE_SUCCESS' });
       localStorage.removeItem('cartItems');
