@@ -104,7 +104,7 @@ function App() {
                   />
                 </div>
               <LinkContainer to="/">
-                <Navbar.Brand>ITTKART</Navbar.Brand>
+                <Navbar.Brand>ITTRKART</Navbar.Brand>
               </LinkContainer>
               <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Navbar.Collapse id="basic-navbar-nav">
