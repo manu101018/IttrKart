@@ -200,7 +200,7 @@ export default function OrderScreen() {
           `/api/orders/${order._id}/pay`,
           {
             id:order._id,
-            status:'Approved',
+            status:'Yes',
             update_time:new Date().toLocaleString('en-GB'),
             user:order.user
           },
@@ -279,7 +279,7 @@ export default function OrderScreen() {
               <Card.Text>
                 <strong>Method:</strong> {order.paymentMethod}
               </Card.Text>
-              {isPayed ? (
+              {order.isPaid ? (
                 <MessageBox variant="success">
                   Paid at {new Date().toLocaleString('en-GB')}
                 </MessageBox>
