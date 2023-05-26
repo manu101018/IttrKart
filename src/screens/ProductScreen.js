@@ -16,6 +16,7 @@ import { getError } from "../utils";
 import { Store } from "../Store";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { toast } from "react-toastify";
+import { API } from "../utils";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -59,7 +60,7 @@ function ProductScreen() {
     const fetchData = async () => {
       dispatch({ type: "FETCH_REQUEST" });
       try {
-        const result = await axios.get(`/api/products/slug/${slug}`);
+        const result = await axios.get(API + `/api/products/slug/${slug}`);
         console.log(result);
         dispatch({ type: "FETCH_SUCCESS", payload: result.data });
       } catch (err) {
@@ -74,7 +75,7 @@ function ProductScreen() {
   const addToCartHandler = async () => {
     const existItem = cart.cartItems.find((x) => x._id === product._id);
     const quantity = existItem ? existItem.quantity + 1 : 1;
-    const { data } = await axios.get(`/api/products/${product._id}`);
+    const { data } = await axios.get(API + `/api/products/${product._id}`);
     if (data.countInStock < quantity) {
       window.alert("Sorry. Product is out of stock");
       return;
@@ -94,7 +95,7 @@ function ProductScreen() {
     }
     try {
       const { data } = await axios.post(
-        `/api/products/${product._id}/reviews`,
+        API + `/api/products/${product._id}/reviews`,
         { rating, comment, name: userInfo.name },
         {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -130,14 +131,14 @@ function ProductScreen() {
             <img
               className="img-large"
               style={{ height: "40rem" }}
-              src={"http://localhost:4000/" + selectedImage}
+              src={API +"/"+ selectedImage}
               alt={product.name}
             ></img>
           ) : (
             <img
               className="img-large"
               style={{ height: "40rem" }}
-              src={"http://localhost:4000/" + product.image}
+              src={API +"/"+ product.image}
               alt={product.name}
             ></img>
           )}
@@ -170,7 +171,7 @@ function ProductScreen() {
                       >
                         <Card.Img
                           variant="top"
-                          src={"http://localhost:4000/" + x}
+                          src={API+"/" + x}
                           alt="product"
                         />
                       </Button>

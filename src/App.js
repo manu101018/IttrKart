@@ -40,6 +40,7 @@ import "./Footer.css";
 import AboutUs from "./staticPages/AboutUs";
 import PrivacyPolicy from "./staticPages/PrivacyPolicy";
 import TermsCondition from "./staticPages/TermsCondition";
+import { API } from "./utils";
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -58,7 +59,7 @@ function App() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const { data } = await axios.get(`/api/products/categories`);
+        const { data } = await axios.get(API + `/api/products/categories`);
         setCategories(data);
       } catch (err) {
         toast.error(getError(err));
@@ -99,7 +100,7 @@ function App() {
                 <div style={{ backgroundColor: "white",marginLeft:"2rem",marginRight:'1rem',borderRadius:"10px" }}>
                   <img
                     style={{ height: "4rem", width: "4rem" }}
-                    src={"http://localhost:4000/IttrkartLogo.svg"}
+                    src={API+`/IttrkartLogo.svg`}
                     alt=""
                   />
                 </div>
@@ -307,7 +308,7 @@ function App() {
                 <div className="ehsLogoWrappers">
                   <img
                     className="EHS-logo"
-                    src={"http://localhost:4000/IttrkartLogo.svg"}
+                    src={API+`/IttrkartLogo.svg`}
                     alt="Logo"
                   />
                 </div>

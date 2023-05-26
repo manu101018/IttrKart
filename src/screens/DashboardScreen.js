@@ -1,25 +1,26 @@
-import React, { useContext, useEffect, useReducer } from 'react';
-import Chart from 'react-google-charts';
-import axios from 'axios';
-import { Store } from '../Store';
-import { getError } from '../utils';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
+import React, { useContext, useEffect, useReducer } from "react";
+import Chart from "react-google-charts";
+import axios from "axios";
+import { Store } from "../Store";
+import { getError } from "../utils";
+import LoadingBox from "../components/LoadingBox";
+import MessageBox from "../components/MessageBox";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import { API } from "../utils";
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'FETCH_REQUEST':
+    case "FETCH_REQUEST":
       return { ...state, loading: true };
-    case 'FETCH_SUCCESS':
+    case "FETCH_SUCCESS":
       return {
         ...state,
         summary: action.payload,
         loading: false,
       };
-    case 'FETCH_FAIL':
+    case "FETCH_FAIL":
       return { ...state, loading: false, error: action.payload };
     default:
       return state;
@@ -28,7 +29,7 @@ const reducer = (state, action) => {
 export default function DashboardScreen() {
   const [{ loading, summary, error }, dispatch] = useReducer(reducer, {
     loading: true,
-    error: '',
+    error: "",
   });
   const { state } = useContext(Store);
   const { userInfo } = state;
@@ -36,14 +37,14 @@ export default function DashboardScreen() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await axios.get('/api/orders/summary', {
+        const { data } = await axios.get(API + "/api/orders/summary", {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-        console.log(data)
-        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        console.log(data);
+        dispatch({ type: "FETCH_SUCCESS", payload: data });
       } catch (err) {
         dispatch({
-          type: 'FETCH_FAIL',
+          type: "FETCH_FAIL",
           payload: getError(err),
         });
       }
@@ -91,9 +92,10 @@ export default function DashboardScreen() {
                   <Card.Title>
                     {summary.orders && summary.users[0]
                       ? summary.orders[0].totalSales.toFixed(2)
-                      : 0}/-
+                      : 0}
+                    /-
                   </Card.Title>
-                  <Card.Text>Amount (Confirm/Pending)</Card.Text>
+                  <Card.Text>Amount</Card.Text>
                 </Card.Body>
               </Card>
             </Col>
@@ -109,7 +111,7 @@ export default function DashboardScreen() {
                 chartType="AreaChart"
                 loader={<div>Loading Chart...</div>}
                 data={[
-                  ['Date', 'Sales'],
+                  ["Date", "Sales"],
                   ...summary.dailyOrders.map((x) => [x._id, x.sales]),
                 ]}
               ></Chart>
@@ -126,7 +128,7 @@ export default function DashboardScreen() {
                 chartType="PieChart"
                 loader={<div>Loading Chart...</div>}
                 data={[
-                  ['Category', 'Products'],
+                  ["Category", "Products"],
                   ...summary.productCategories.map((x) => [x._id, x.count]),
                 ]}
               ></Chart>

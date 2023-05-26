@@ -15,6 +15,7 @@ import { Store } from '../Store';
 import { getError } from '../utils';
 import { toast } from 'react-toastify';
 import Stripe from 'stripe';
+import { API } from '../utils';
 
 function reducer(state, action) {
   switch (action.type) {
@@ -98,7 +99,7 @@ export default function OrderScreen() {
       try {
         dispatch({ type: 'PAY_REQUEST' });
         const { data } = await axios.put(
-          `/api/orders/${order._id}/pay`,
+          API + `/api/orders/${order._id}/pay`,
           details,
           {
             headers: { authorization: `Bearer ${userInfo.token}` },
@@ -120,7 +121,7 @@ export default function OrderScreen() {
     const fetchOrder = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
-        const { data } = await axios.get(`/api/orders/${orderId}`, {
+        const { data } = await axios.get(API + `/api/orders/${orderId}`, {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
@@ -147,7 +148,7 @@ export default function OrderScreen() {
       }
     } else {
       const loadPaypalScript = async () => {
-        const { data: clientId } = await axios.get('/api/keys/paypal', {
+        const { data: clientId } = await axios.get(API + '/api/keys/paypal', {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
         paypalDispatch({
@@ -175,7 +176,7 @@ export default function OrderScreen() {
     try {
       dispatch({ type: 'DELIVER_REQUEST' });
       const { data } = await axios.put(
-        `/api/orders/${order._id}/deliver`,
+        API + `/api/orders/${order._id}/deliver`,
         {},
         {
           headers: { authorization: `Bearer ${userInfo.token}` },
@@ -197,7 +198,7 @@ export default function OrderScreen() {
       try {
         dispatch({ type: 'PAY_REQUEST' });
         const { data } = await axios.put(
-          `/api/orders/${order._id}/pay`,
+          API + `/api/orders/${order._id}/pay`,
           {
             id:order._id,
             status:'Yes',
@@ -305,7 +306,7 @@ export default function OrderScreen() {
                     <Row className="align-items-center">
                       <Col md={6}>
                         <img
-                          src={'http://localhost:4000/' + item.image}
+                          src={API +"/"+ item.image}
                           alt={item.name}
                           className="img-fluid rounded img-thumbnail"
                         ></img>{' '}
@@ -492,7 +493,7 @@ export default function OrderScreen() {
                     {loadingPay && <LoadingBox></LoadingBox>}
                   </ListGroup.Item>
                 )}
-                {userInfo.isAdmin && isPayed && !order.isDelivered && (
+                {order.isPaid && !order.isDelivered && (
                   <ListGroup.Item>
                     {loadingDeliver && <LoadingBox></LoadingBox>}
                     <div className="d-grid">
