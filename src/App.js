@@ -36,6 +36,7 @@ import UserEditScreen from "./screens/UserEditScreen";
 import MapScreen from "./screens/MapScreen";
 import ForgetPasswordScreen from "./screens/ForgetPasswordScreen";
 import ResetPasswordScreen from "./screens/ResetPasswordScreen";
+import TrackingPage from "./screens/Tracking";
 import "./Footer.css";
 import AboutUs from "./staticPages/AboutUs";
 import PrivacyPolicy from "./staticPages/PrivacyPolicy";
@@ -297,6 +298,7 @@ function App() {
               <Route path="/terms" element={<TermsCondition />} />
 
               <Route path="/" element={<HomeScreen />} />
+              <Route path="/Tracking" element={<TrackingPage />} />
             </Routes>
           </Container>
         </main>
