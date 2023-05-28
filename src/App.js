@@ -98,13 +98,20 @@ function App() {
               >
                 <i className="fas fa-bars"></i>
               </Button>
-                <div style={{ backgroundColor: "white",marginLeft:"2rem",marginRight:'1rem',borderRadius:"10px" }}>
-                  <img
-                    style={{ height: "4rem", width: "4rem" }}
-                    src={API+`/IttrkartLogo.svg`}
-                    alt=""
-                  />
-                </div>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  marginLeft: "2rem",
+                  marginRight: "1rem",
+                  borderRadius: "10px",
+                }}
+              >
+                <img
+                  style={{ height: "4rem", width: "4rem" }}
+                  src={API + `/IttrkartLogo.svg`}
+                  alt=""
+                />
+              </div>
               <LinkContainer to="/">
                 <Navbar.Brand>ITTRKART</Navbar.Brand>
               </LinkContainer>
@@ -115,7 +122,11 @@ function App() {
                   className="me-auto  w-100  justify-content-end"
                   style={{ marginLeft: "-20rem" }}
                 >
-                  <Link to="/cart" className="nav-link" style={{color:"white"}}>
+                  <Link
+                    to="/cart"
+                    className="nav-link"
+                    style={{ color: "white" }}
+                  >
                     Cart
                     {cart.cartItems.length > 0 && (
                       <Badge pill bg="danger">
@@ -141,7 +152,11 @@ function App() {
                       </Link>
                     </NavDropdown>
                   ) : (
-                    <Link className="nav-link" to="/signin" style={{color:"white"}}>
+                    <Link
+                      className="nav-link"
+                      to="/signin"
+                      style={{ color: "white" }}
+                    >
                       Sign In
                     </Link>
                   )}
@@ -161,8 +176,8 @@ function App() {
                       </LinkContainer>
                     </NavDropdown>
                   )}
-                  
-                  {userInfo && userInfo.isVendor && (
+
+                  {userInfo && userInfo.isVendor && !userInfo.isAdmin && (
                     <NavDropdown title="Vendor" id="admin-nav-dropdown">
                       {/* <LinkContainer to="/admin/dashboard">
                         <NavDropdown.Item>Dashboard</NavDropdown.Item>
@@ -327,7 +342,7 @@ function App() {
                 <div className="ehsLogoWrappers">
                   <img
                     className="EHS-logo"
-                    src={API+`/IttrkartLogo.svg`}
+                    src={API + `/IttrkartLogo.svg`}
                     alt="Logo"
                   />
                 </div>
