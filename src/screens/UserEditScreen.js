@@ -46,6 +46,7 @@ export default function UserEditScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isVendor, setIsVendor] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,6 +58,7 @@ export default function UserEditScreen() {
         setName(data.name);
         setEmail(data.email);
         setIsAdmin(data.isAdmin);
+        setIsVendor(data.isVendor);
         dispatch({ type: 'FETCH_SUCCESS' });
       } catch (err) {
         dispatch({
@@ -74,7 +76,7 @@ export default function UserEditScreen() {
       dispatch({ type: 'UPDATE_REQUEST' });
       await axios.put(
         API + `/api/users/${userId}`,
-        { _id: userId, name, email, isAdmin },
+        { _id: userId, name, email, isAdmin, isVendor },
         {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         }
@@ -127,6 +129,15 @@ export default function UserEditScreen() {
             label="isAdmin"
             checked={isAdmin}
             onChange={(e) => setIsAdmin(e.target.checked)}
+          />
+
+          <Form.Check
+            className="mb-3"
+            type="checkbox"
+            id="isVendor"
+            label="isVendor"
+            checked={isVendor}
+            onChange={(e) => setIsVendor(e.target.checked)}
           />
 
           <div className="mb-3">

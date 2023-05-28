@@ -107,6 +107,7 @@ export default function UserListScreen() {
               <th>NAME</th>
               <th>EMAIL</th>
               <th>IS ADMIN</th>
+              <th>IS VENDOR</th>
               <th>ACTIONS</th>
             </tr>
           </thead>
@@ -117,6 +118,7 @@ export default function UserListScreen() {
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>{user.isAdmin ? 'YES' : 'NO'}</td>
+                <td>{user.isVendor ? 'YES' : 'NO'}</td>
                 <td>
                   <Button
                     type="button"
