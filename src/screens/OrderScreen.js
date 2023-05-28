@@ -1,46 +1,46 @@
-import axios from 'axios';
-import React, { useContext, useEffect, useReducer,useState } from 'react';
-import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
-import { Helmet } from 'react-helmet-async';
-import { useNavigate, useParams } from 'react-router-dom';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Card from 'react-bootstrap/Card';
-import { Link } from 'react-router-dom';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
-import { Store } from '../Store';
-import { getError } from '../utils';
-import { toast } from 'react-toastify';
-import Stripe from 'stripe';
-import { API } from '../utils';
+import axios from "axios";
+import React, { useContext, useEffect, useReducer, useState } from "react";
+import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
+import { Helmet } from "react-helmet-async";
+import { useNavigate, useParams } from "react-router-dom";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import ListGroup from "react-bootstrap/ListGroup";
+import Card from "react-bootstrap/Card";
+import { Link } from "react-router-dom";
+import LoadingBox from "../components/LoadingBox";
+import MessageBox from "../components/MessageBox";
+import { Store } from "../Store";
+import { getError } from "../utils";
+import { toast } from "react-toastify";
+import Stripe from "stripe";
+import { API } from "../utils";
 
 function reducer(state, action) {
   switch (action.type) {
-    case 'FETCH_REQUEST':
-      return { ...state, loading: true, error: '' };
-    case 'FETCH_SUCCESS':
-      return { ...state, loading: false, order: action.payload, error: '' };
-    case 'FETCH_FAIL':
+    case "FETCH_REQUEST":
+      return { ...state, loading: true, error: "" };
+    case "FETCH_SUCCESS":
+      return { ...state, loading: false, order: action.payload, error: "" };
+    case "FETCH_FAIL":
       return { ...state, loading: false, error: action.payload };
-    case 'PAY_REQUEST':
+    case "PAY_REQUEST":
       return { ...state, loadingPay: true };
-    case 'PAY_SUCCESS':
+    case "PAY_SUCCESS":
       return { ...state, loadingPay: false, successPay: true };
-    case 'PAY_FAIL':
+    case "PAY_FAIL":
       return { ...state, loadingPay: false };
-    case 'PAY_RESET':
+    case "PAY_RESET":
       return { ...state, loadingPay: false, successPay: false };
 
-    case 'DELIVER_REQUEST':
+    case "DELIVER_REQUEST":
       return { ...state, loadingDeliver: true };
-    case 'DELIVER_SUCCESS':
+    case "DELIVER_SUCCESS":
       return { ...state, loadingDeliver: false, successDeliver: true };
-    case 'DELIVER_FAIL':
+    case "DELIVER_FAIL":
       return { ...state, loadingDeliver: false };
-    case 'DELIVER_RESET':
+    case "DELIVER_RESET":
       return {
         ...state,
         loadingDeliver: false,
@@ -51,7 +51,7 @@ function reducer(state, action) {
   }
 }
 export default function OrderScreen() {
-  const [isPayed,SetisPayed]=useState(false);
+  const [isPayed, SetisPayed] = useState(false);
   const { state } = useContext(Store);
   const { userInfo } = state;
 
@@ -73,7 +73,7 @@ export default function OrderScreen() {
   ] = useReducer(reducer, {
     loading: true,
     order: {},
-    error: '',
+    error: "",
     successPay: false,
     loadingPay: false,
   });
@@ -97,7 +97,7 @@ export default function OrderScreen() {
   function onApprove(data, actions) {
     return actions.order.capture().then(async function (details) {
       try {
-        dispatch({ type: 'PAY_REQUEST' });
+        dispatch({ type: "PAY_REQUEST" });
         const { data } = await axios.put(
           API + `/api/orders/${order._id}/pay`,
           details,
@@ -105,10 +105,10 @@ export default function OrderScreen() {
             headers: { authorization: `Bearer ${userInfo.token}` },
           }
         );
-        dispatch({ type: 'PAY_SUCCESS', payload: data });
-        toast.success('Order is paid');
+        dispatch({ type: "PAY_SUCCESS", payload: data });
+        toast.success("Order is paid");
       } catch (err) {
-        dispatch({ type: 'PAY_FAIL', payload: getError(err) });
+        dispatch({ type: "PAY_FAIL", payload: getError(err) });
         toast.error(getError(err));
       }
     });
@@ -120,18 +120,18 @@ export default function OrderScreen() {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        dispatch({ type: 'FETCH_REQUEST' });
+        dispatch({ type: "FETCH_REQUEST" });
         const { data } = await axios.get(API + `/api/orders/${orderId}`, {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
-        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        dispatch({ type: "FETCH_SUCCESS", payload: data });
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+        dispatch({ type: "FETCH_FAIL", payload: getError(err) });
       }
     };
 
     if (!userInfo) {
-      return navigate('/login');
+      return navigate("/login");
     }
     if (
       !order._id ||
@@ -141,24 +141,24 @@ export default function OrderScreen() {
     ) {
       fetchOrder();
       if (successPay) {
-        dispatch({ type: 'PAY_RESET' });
+        dispatch({ type: "PAY_RESET" });
       }
       if (successDeliver) {
-        dispatch({ type: 'DELIVER_RESET' });
+        dispatch({ type: "DELIVER_RESET" });
       }
     } else {
       const loadPaypalScript = async () => {
-        const { data: clientId } = await axios.get(API + '/api/keys/paypal', {
+        const { data: clientId } = await axios.get(API + "/api/keys/paypal", {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
         paypalDispatch({
-          type: 'resetOptions',
+          type: "resetOptions",
           value: {
-            'client-id': clientId,
-            currency: 'USD',
+            "client-id": clientId,
+            currency: "USD",
           },
         });
-        paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
+        paypalDispatch({ type: "setLoadingStatus", value: "pending" });
       };
       loadPaypalScript();
     }
@@ -174,7 +174,7 @@ export default function OrderScreen() {
 
   async function deliverOrderHandler() {
     try {
-      dispatch({ type: 'DELIVER_REQUEST' });
+      dispatch({ type: "DELIVER_REQUEST" });
       const { data } = await axios.put(
         API + `/api/orders/${order._id}/deliver`,
         {},
@@ -182,13 +182,13 @@ export default function OrderScreen() {
           headers: { authorization: `Bearer ${userInfo.token}` },
         }
       );
-      dispatch({ type: 'DELIVER_SUCCESS', payload: data });
-      toast.success('Order is out for delivery');
+      dispatch({ type: "DELIVER_SUCCESS", payload: data });
+      toast.success("Order is out for delivery");
     } catch (err) {
       toast.error(getError(err));
-      dispatch({ type: 'DELIVER_FAIL' });
+      dispatch({ type: "DELIVER_FAIL" });
     }
-  };
+  }
 
   const FormSubmitHndler = (event) => {
     event.preventDefault();
@@ -196,23 +196,23 @@ export default function OrderScreen() {
     // toast.success('Payment successfull');
     const loadPaypalScript = async () => {
       try {
-        dispatch({ type: 'PAY_REQUEST' });
+        dispatch({ type: "PAY_REQUEST" });
         const { data } = await axios.put(
           API + `/api/orders/${order._id}/pay`,
           {
-            id:order._id,
-            status:'Yes',
-            update_time:new Date().toLocaleString('en-GB'),
-            user:order.user
+            id: order._id,
+            status: "Yes",
+            update_time: new Date().toLocaleString("en-GB"),
+            user: order.user,
           },
           {
             headers: { authorization: `Bearer ${userInfo.token}` },
           }
         );
-        dispatch({ type: 'PAY_SUCCESS', payload: data });
-        toast.success('Order is paid');
+        dispatch({ type: "PAY_SUCCESS", payload: data });
+        toast.success("Order is paid");
       } catch (err) {
-        dispatch({ type: 'PAY_FAIL', payload: getError(err) });
+        dispatch({ type: "PAY_FAIL", payload: getError(err) });
         toast.error(getError(err));
       }
     };
@@ -222,7 +222,7 @@ export default function OrderScreen() {
   async function StripePayment() {
     try {
       var stripe = Stripe(
-        'pk_test_51NAcCUSIClwHNG6eOlKOlf745yegtW90nqRvSAXqUKSqI9kS2EwfySHSqIT60PlxPjUH4MyVCZ7G05q8lgDPLRD1003FV6hy6v'
+        "pk_test_51NAcCUSIClwHNG6eOlKOlf745yegtW90nqRvSAXqUKSqI9kS2EwfySHSqIT60PlxPjUH4MyVCZ7G05q8lgDPLRD1003FV6hy6v"
       );
     } catch (err) {}
   }
@@ -246,13 +246,14 @@ export default function OrderScreen() {
                 <strong>Name:</strong> {order.shippingAddress.fullName} <br />
                 <strong>Address: </strong> {order.shippingAddress.address},
                 {order.shippingAddress.city}, {order.shippingAddress.postalCode}
-                ,{order.shippingAddress.country}
-                &nbsp;
+                ,{order.shippingAddress.country}.
+                &nbsp; &nbsp;
                 {order.shippingAddress.location &&
                   order.shippingAddress.location.lat && (
                     <a
                       target="_new"
                       href={`https://maps.google.com?q=${order.shippingAddress.location.lat},${order.shippingAddress.location.lng}`}
+                      style={{ color: "blue" }}
                     >
                       Show On Map
                     </a>
@@ -260,7 +261,33 @@ export default function OrderScreen() {
               </Card.Text>
               {order.isDelivered ? (
                 <MessageBox variant="success">
-                  Out for Delivery at {new Date().toLocaleString('en-GB')}
+                  <span>
+                    Out for Delivery at {new Date().toLocaleString("en-GB")}
+                  </span>
+                  <span>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <div
+                        style={{ border: "1px #404040 solid", margin: "1rem" }}
+                      >
+                        <div style={{ padding: "1rem" }}>
+                          <h2>Current status</h2>
+                          <p>Shipped from: Warehouse A</p>
+                          <p>
+                            Destination: {order.shippingAddress.address},
+                            {order.shippingAddress.city},{" "}
+                            {order.shippingAddress.postalCode},
+                            {order.shippingAddress.country}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </span>
                 </MessageBox>
               ) : (
                 <MessageBox variant="danger">Not Delivered</MessageBox>
@@ -282,7 +309,7 @@ export default function OrderScreen() {
               </Card.Text>
               {order.isPaid ? (
                 <MessageBox variant="success">
-                  Paid at {new Date().toLocaleString('en-GB')}
+                  Paid at {new Date().toLocaleString("en-GB")}
                 </MessageBox>
               ) : (
                 <MessageBox variant="danger">Not Paid</MessageBox>
@@ -306,10 +333,10 @@ export default function OrderScreen() {
                     <Row className="align-items-center">
                       <Col md={6}>
                         <img
-                          src={API +"/"+ item.image}
+                          src={API + "/" + item.image}
                           alt={item.name}
                           className="img-fluid rounded img-thumbnail"
-                        ></img>{' '}
+                        ></img>{" "}
                         <Link to={`/product/${item.slug}`}>{item.name}</Link>
                       </Col>
                       <Col md={3}>
@@ -370,21 +397,21 @@ export default function OrderScreen() {
                       // </div>
                       <div
                         style={{
-                          width: '400px',
-                          margin: '5px -24px',
-                          padding: '20px',
-                          border: '1px solid #ccc',
-                          backgroundColor: '#f9f9f9',
+                          width: "400px",
+                          margin: "5px -24px",
+                          padding: "20px",
+                          border: "1px solid #ccc",
+                          backgroundColor: "#f9f9f9",
                         }}
                       >
-                        <h2 style={{ textAlign: 'center' }}>
+                        <h2 style={{ textAlign: "center" }}>
                           Card Information
                         </h2>
                         <form onSubmit={FormSubmitHndler}>
-                        {/* <form onSubmit={this.handleSubmit}> */}
+                          {/* <form onSubmit={this.handleSubmit}> */}
                           <label
                             htmlFor="cardNumber"
-                            style={{ marginBottom: '10px', display: 'block' }}
+                            style={{ marginBottom: "10px", display: "block" }}
                           >
                             Card Number:
                           </label>
@@ -394,10 +421,10 @@ export default function OrderScreen() {
                             name="cardNumber"
                             placeholder="Enter card number"
                             style={{
-                              width: '100%',
-                              padding: '10px',
-                              border: '1px solid #ccc',
-                              borderRadius: '4px',
+                              width: "100%",
+                              padding: "10px",
+                              border: "1px solid #ccc",
+                              borderRadius: "4px",
                             }}
                             // value={this.state.cardNumber}
                             // onChange={this.handleChange}
@@ -406,7 +433,7 @@ export default function OrderScreen() {
 
                           <label
                             htmlFor="expireOn"
-                            style={{ marginBottom: '10px', display: 'block' }}
+                            style={{ marginBottom: "10px", display: "block" }}
                           >
                             Expire On:
                           </label>
@@ -416,10 +443,10 @@ export default function OrderScreen() {
                             name="expireOn"
                             placeholder="MM/YY"
                             style={{
-                              width: '100%',
-                              padding: '10px',
-                              border: '1px solid #ccc',
-                              borderRadius: '4px',
+                              width: "100%",
+                              padding: "10px",
+                              border: "1px solid #ccc",
+                              borderRadius: "4px",
                             }}
                             // value={this.state.expireOn}
                             // onChange={this.handleChange}
@@ -428,7 +455,7 @@ export default function OrderScreen() {
 
                           <label
                             htmlFor="csv"
-                            style={{ marginBottom: '10px', display: 'block' }}
+                            style={{ marginBottom: "10px", display: "block" }}
                           >
                             CSV:
                           </label>
@@ -438,10 +465,10 @@ export default function OrderScreen() {
                             name="csv"
                             placeholder="Enter CSV"
                             style={{
-                              width: '100%',
-                              padding: '10px',
-                              border: '1px solid #ccc',
-                              borderRadius: '4px',
+                              width: "100%",
+                              padding: "10px",
+                              border: "1px solid #ccc",
+                              borderRadius: "4px",
                             }}
                             // value={this.state.csv}
                             // onChange={this.handleChange}
@@ -450,7 +477,7 @@ export default function OrderScreen() {
 
                           <label
                             htmlFor="cardHolderName"
-                            style={{ marginBottom: '10px', display: 'block' }}
+                            style={{ marginBottom: "10px", display: "block" }}
                           >
                             Card Holder Name:
                           </label>
@@ -460,29 +487,33 @@ export default function OrderScreen() {
                             name="cardHolderName"
                             placeholder="Enter card holder name"
                             style={{
-                              width: '100%',
-                              padding: '10px',
-                              border: '1px solid #ccc',
-                              borderRadius: '4px',
+                              width: "100%",
+                              padding: "10px",
+                              border: "1px solid #ccc",
+                              borderRadius: "4px",
                             }}
                             // value={this.state.cardHolderName}
                             // onChange={this.handleChange}
                             required
                           />
 
-                          {!isPayed && (<button
-                            type="submit"
-                            style={{
-                              backgroundColor: '#4CAF50',
-                              color: 'white',
-                              padding: '10px 20px',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              fontSize: '16px',
-                              marginTop: "20px"
-                            }}
-                          >Pay</button>)}
+                          {!isPayed && (
+                            <button
+                              type="submit"
+                              style={{
+                                backgroundColor: "#4CAF50",
+                                color: "white",
+                                padding: "10px 20px",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontSize: "16px",
+                                marginTop: "20px",
+                              }}
+                            >
+                              Pay
+                            </button>
+                          )}
                         </form>
                       </div>
                       // <div>
