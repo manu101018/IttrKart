@@ -277,7 +277,7 @@ export default function OrderScreen() {
                       >
                         <div style={{ padding: "1rem" }}>
                           <h2>Current status</h2>
-                          <p>Shipped from: Warehouse A</p>
+                          <p>Shipped from: REC Kannauj A</p>
                           <p>
                             Destination: {order.shippingAddress.address},
                             {order.shippingAddress.city},{" "}
