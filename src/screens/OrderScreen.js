@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useContext, useEffect, useReducer, useState } from "react";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { Helmet } from "react-helmet-async";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
@@ -58,6 +58,7 @@ export default function OrderScreen() {
   const params = useParams();
   const { id: orderId } = params;
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [
     {
@@ -190,7 +191,7 @@ export default function OrderScreen() {
     }
   }
 
-  const FormSubmitHndler = (event) => {
+  const placeOrderHandler = (event) => {
     event.preventDefault();
     SetisPayed(true);
     // toast.success('Payment successfull');
@@ -209,6 +210,22 @@ export default function OrderScreen() {
             headers: { authorization: `Bearer ${userInfo.token}` },
           }
         );
+
+        const data2 = await axios.post(
+          API + `/api/orders/create-checkout-session`,
+          {
+            OrderID: order._id,
+            cartItems: order.orderItems,
+            userId: userInfo._id,
+          }
+        );
+        window.open(data2.data.session.url, "_blank");
+        setTimeout(() => {
+          window.close();
+        }, 1000);
+        setTimeout(()=>{
+          deliverOrderHandler()
+        },15000)
         dispatch({ type: "PAY_SUCCESS", payload: data });
         toast.success("Order is paid");
       } catch (err) {
@@ -218,15 +235,7 @@ export default function OrderScreen() {
     };
     loadPaypalScript();
   };
-
-  async function StripePayment() {
-    try {
-      var stripe = Stripe(
-        "pk_test_51NAcCUSIClwHNG6eOlKOlf745yegtW90nqRvSAXqUKSqI9kS2EwfySHSqIT60PlxPjUH4MyVCZ7G05q8lgDPLRD1003FV6hy6v"
-      );
-    } catch (err) {}
-  }
-
+  
   return loading ? (
     <LoadingBox></LoadingBox>
   ) : error ? (
@@ -246,8 +255,7 @@ export default function OrderScreen() {
                 <strong>Name:</strong> {order.shippingAddress.fullName} <br />
                 <strong>Address: </strong> {order.shippingAddress.address},
                 {order.shippingAddress.city}, {order.shippingAddress.postalCode}
-                ,{order.shippingAddress.country}.
-                &nbsp; &nbsp;
+                ,{order.shippingAddress.country}. &nbsp; &nbsp;
                 {order.shippingAddress.location &&
                   order.shippingAddress.location.lat && (
                     <a
@@ -388,134 +396,150 @@ export default function OrderScreen() {
                     {isPending ? (
                       <LoadingBox />
                     ) : (
-                      // <div>
-                      //   <PayPalButtons
-                      //     createOrder={createOrder}
-                      //     onApprove={onApprove}
-                      //     onError={onError}
-                      //   ></PayPalButtons>
-                      // </div>
-                      <div
-                        style={{
-                          width: "400px",
-                          margin: "5px -24px",
-                          padding: "20px",
-                          border: "1px solid #ccc",
-                          backgroundColor: "#f9f9f9",
-                        }}
-                      >
-                        <h2 style={{ textAlign: "center" }}>
-                          Card Information
-                        </h2>
-                        <form onSubmit={FormSubmitHndler}>
-                          {/* <form onSubmit={this.handleSubmit}> */}
-                          <label
-                            htmlFor="cardNumber"
-                            style={{ marginBottom: "10px", display: "block" }}
-                          >
-                            Card Number:
-                          </label>
-                          <input
-                            type="text"
-                            id="cardNumber"
-                            name="cardNumber"
-                            placeholder="Enter card number"
-                            style={{
-                              width: "100%",
-                              padding: "10px",
-                              border: "1px solid #ccc",
-                              borderRadius: "4px",
-                            }}
-                            // value={this.state.cardNumber}
-                            // onChange={this.handleChange}
-                            required
-                          />
-
-                          <label
-                            htmlFor="expireOn"
-                            style={{ marginBottom: "10px", display: "block" }}
-                          >
-                            Expire On:
-                          </label>
-                          <input
-                            type="text"
-                            id="expireOn"
-                            name="expireOn"
-                            placeholder="MM/YY"
-                            style={{
-                              width: "100%",
-                              padding: "10px",
-                              border: "1px solid #ccc",
-                              borderRadius: "4px",
-                            }}
-                            // value={this.state.expireOn}
-                            // onChange={this.handleChange}
-                            required
-                          />
-
-                          <label
-                            htmlFor="csv"
-                            style={{ marginBottom: "10px", display: "block" }}
-                          >
-                            CSV:
-                          </label>
-                          <input
-                            type="text"
-                            id="csv"
-                            name="csv"
-                            placeholder="Enter CSV"
-                            style={{
-                              width: "100%",
-                              padding: "10px",
-                              border: "1px solid #ccc",
-                              borderRadius: "4px",
-                            }}
-                            // value={this.state.csv}
-                            // onChange={this.handleChange}
-                            required
-                          />
-
-                          <label
-                            htmlFor="cardHolderName"
-                            style={{ marginBottom: "10px", display: "block" }}
-                          >
-                            Card Holder Name:
-                          </label>
-                          <input
-                            type="text"
-                            id="cardHolderName"
-                            name="cardHolderName"
-                            placeholder="Enter card holder name"
-                            style={{
-                              width: "100%",
-                              padding: "10px",
-                              border: "1px solid #ccc",
-                              borderRadius: "4px",
-                            }}
-                            // value={this.state.cardHolderName}
-                            // onChange={this.handleChange}
-                            required
-                          />
-
-                          {!isPayed && (
-                            <button
-                              type="submit"
-                              style={{
-                                backgroundColor: "#4CAF50",
-                                color: "white",
-                                padding: "10px 20px",
-                                border: "none",
-                                borderRadius: "4px",
-                                cursor: "pointer",
-                                fontSize: "16px",
-                                marginTop: "20px",
-                              }}
-                            >
-                              Pay
-                            </button>
-                          )}
-                        </form>
+                      <div>
+                        {/* <PayPalButtons
+                          createOrder={createOrder}
+                          onApprove={onApprove}
+                          onError={onError}
+                        ></PayPalButtons> */}
+                        <button
+                          type="submit"
+                          style={{
+                            backgroundColor: "#4CAF50",
+                            color: "white",
+                            padding: "10px 20px",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "16px",
+                            marginTop: "20px",
+                          }}
+                          onClick={placeOrderHandler}
+                        >
+                          Pay
+                        </button>
                       </div>
+                      // <div
+                      //   style={{
+                      //     width: "400px",
+                      //     margin: "5px -24px",
+                      //     padding: "20px",
+                      //     border: "1px solid #ccc",
+                      //     backgroundColor: "#f9f9f9",
+                      //   }}
+                      // >
+                      //   <h2 style={{ textAlign: "center" }}>
+                      //     Card Information
+                      //   </h2>
+                      //   <form onSubmit={FormSubmitHndler}>
+                      //     {/* <form onSubmit={this.handleSubmit}> */}
+                      //     <label
+                      //       htmlFor="cardNumber"
+                      //       style={{ marginBottom: "10px", display: "block" }}
+                      //     >
+                      //       Card Number:
+                      //     </label>
+                      //     <input
+                      //       type="text"
+                      //       id="cardNumber"
+                      //       name="cardNumber"
+                      //       placeholder="Enter card number"
+                      //       style={{
+                      //         width: "100%",
+                      //         padding: "10px",
+                      //         border: "1px solid #ccc",
+                      //         borderRadius: "4px",
+                      //       }}
+                      //       // value={this.state.cardNumber}
+                      //       // onChange={this.handleChange}
+                      //       required
+                      //     />
+
+                      //     <label
+                      //       htmlFor="expireOn"
+                      //       style={{ marginBottom: "10px", display: "block" }}
+                      //     >
+                      //       Expire On:
+                      //     </label>
+                      //     <input
+                      //       type="text"
+                      //       id="expireOn"
+                      //       name="expireOn"
+                      //       placeholder="MM/YY"
+                      //       style={{
+                      //         width: "100%",
+                      //         padding: "10px",
+                      //         border: "1px solid #ccc",
+                      //         borderRadius: "4px",
+                      //       }}
+                      //       // value={this.state.expireOn}
+                      //       // onChange={this.handleChange}
+                      //       required
+                      //     />
+
+                      //     <label
+                      //       htmlFor="csv"
+                      //       style={{ marginBottom: "10px", display: "block" }}
+                      //     >
+                      //       CSV:
+                      //     </label>
+                      //     <input
+                      //       type="text"
+                      //       id="csv"
+                      //       name="csv"
+                      //       placeholder="Enter CSV"
+                      //       style={{
+                      //         width: "100%",
+                      //         padding: "10px",
+                      //         border: "1px solid #ccc",
+                      //         borderRadius: "4px",
+                      //       }}
+                      //       // value={this.state.csv}
+                      //       // onChange={this.handleChange}
+                      //       required
+                      //     />
+
+                      //     <label
+                      //       htmlFor="cardHolderName"
+                      //       style={{ marginBottom: "10px", display: "block" }}
+                      //     >
+                      //       Card Holder Name:
+                      //     </label>
+                      //     <input
+                      //       type="text"
+                      //       id="cardHolderName"
+                      //       name="cardHolderName"
+                      //       placeholder="Enter card holder name"
+                      //       style={{
+                      //         width: "100%",
+                      //         padding: "10px",
+                      //         border: "1px solid #ccc",
+                      //         borderRadius: "4px",
+                      //       }}
+                      //       // value={this.state.cardHolderName}
+                      //       // onChange={this.handleChange}
+                      //       required
+                      //     />
+
+                      //     {!isPayed && (
+                      //       <button
+                      //         type="submit"
+                      //         style={{
+                      //           backgroundColor: "#4CAF50",
+                      //           color: "white",
+                      //           padding: "10px 20px",
+                      //           border: "none",
+                      //           borderRadius: "4px",
+                      //           cursor: "pointer",
+                      //           fontSize: "16px",
+                      //           marginTop: "20px",
+                      //         }}
+                      //       >
+                      //         Pay
+                      //       </button>
+                      //     )}
+                      //   </form>
+                      // </div>
                       // <div>
                       //   <PayButton type="button" onClick={StripePayment}>Pay</PayButton>
                       //   <script scr="https://js.stripe.com/v3/"></script>

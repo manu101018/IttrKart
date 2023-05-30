@@ -1,12 +1,13 @@
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { API } from '../utils';
 
 const PayButton = ({ cartItems }) => {
   const user = useSelector((state) => state.auth);
 
   const handleCheckout = () => {
     axios
-      .post(`/stripe/create-checkout-session`, {
+      .post(API+`/api/orders/create-checkout-session`, {
         cartItems,
         userId: user._id,
       })

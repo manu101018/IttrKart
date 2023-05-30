@@ -68,7 +68,12 @@ export default function PlaceOrderScreen() {
           },
         }
       );
-      console.log(data, "helo");
+
+      // const data2 = await Axios.post(API+`/api/orders/create-checkout-session`, {
+      //   cartItems:cart.cartItems,
+      //   userId: userInfo._id,
+      // })
+      // window.open(data2.data.session.url,'_blank')
       ctxDispatch({ type: "CART_CLEAR" });
       dispatch({ type: "CREATE_SUCCESS" });
       localStorage.removeItem("cartItems");

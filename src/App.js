@@ -41,6 +41,7 @@ import "./Footer.css";
 import AboutUs from "./staticPages/AboutUs";
 import PrivacyPolicy from "./staticPages/PrivacyPolicy";
 import TermsCondition from "./staticPages/TermsCondition";
+import CheckoutSuccess from "./components/CheckoutSuccess";
 import { API } from "./utils";
 
 function App() {
@@ -328,6 +329,7 @@ function App() {
               <Route path="/about" element={<AboutUs />} />
               <Route path="/privacypolicy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsCondition />} />
+              <Route path="/checkout-success" element={<CheckoutSuccess />} />
 
               <Route path="/" element={<HomeScreen />} />
               <Route path="/Tracking" element={<TrackingPage />} />
