@@ -4,5 +4,5 @@ export const getError = (error) => {
     : error.message;
 };
 
-export const API = "http://localhost:4000";
-// export const API = "https://major-finalbackend-lmlx.vercel.app";
+// export const API = "http://localhost:4000";
+export const API = "https://major-finalbackend-lmlx.vercel.app";
