@@ -29,8 +29,8 @@ const AboutUs = () => {
           flowers using traditional attar making process.
         </p>
         <p className="aboutText">
-          This project is developed by final year student of REC Kannauj Mausam,
-          Manjeet Singh, Hemant Kaushik under the guidence of Dr. B.D.K Patro.
+          This project is developed by final year student of REC Kannauj <b>Mausam, </b>  
+          <b>Manjeet Singh,</b> <b>Hemant Kaushik</b> under the guidence of <b>Dr. B.D.K Patro</b>.
         </p>
       </div>
     </div>

@@ -351,7 +351,11 @@ function App() {
                 <h2>Contact Us</h2>
                 <p className="details">
                   Mobile No : +91 9627766958 <br />
-                  Email ID : manjeetkakran66@gmail.com
+                  {/* Mobile No : +91 6392933293 <br />
+                  Mobile No : +91 8954745517 <br /> */}
+                  Email ID : manjeetkakran66@gmail.com <br />
+                  {/* Email ID : mausam2001kv@gmail.com<br />
+                  Email ID : hkkaushik7811@gmail.com<br /> */}
                 </p>
                 <div className="icons-box">
                   <a href="" target="_blank" rel="norefferer">

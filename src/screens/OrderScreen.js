@@ -140,7 +140,9 @@ export default function OrderScreen() {
       successDeliver ||
       (order._id && order._id !== orderId)
     ) {
-      fetchOrder();
+      setTimeout(()=>{
+        fetchOrder();
+      },20000)
       if (successPay) {
         dispatch({ type: "PAY_RESET" });
       }
@@ -209,8 +211,8 @@ export default function OrderScreen() {
           {
             headers: { authorization: `Bearer ${userInfo.token}` },
           }
-        );
-
+          );
+          
         const data2 = await axios.post(
           API + `/api/orders/create-checkout-session`,
           {
@@ -218,16 +220,16 @@ export default function OrderScreen() {
             cartItems: order.orderItems,
             userId: userInfo._id,
           }
-        );
-        window.open(data2.data.session.url, "_blank");
-        setTimeout(() => {
-          window.close();
-        }, 1000);
-        setTimeout(()=>{
-          deliverOrderHandler()
-        },15000)
-        dispatch({ type: "PAY_SUCCESS", payload: data });
-        toast.success("Order is paid");
+          );
+          window.open(data2.data.session.url, "_blank");
+          setTimeout(() => {
+            window.close();
+          }, 1000);
+          setTimeout(()=>{
+            deliverOrderHandler()
+          },20000)
+          dispatch({ type: "PAY_SUCCESS", payload: data });
+          // toast.success("Order is paid");
       } catch (err) {
         dispatch({ type: "PAY_FAIL", payload: getError(err) });
         toast.error(getError(err));
@@ -285,7 +287,7 @@ export default function OrderScreen() {
                       >
                         <div style={{ padding: "1rem" }}>
                           <h2>Current status</h2>
-                          <p>Shipped from: REC Kannauj A</p>
+                          <p>To be dispatch from: Forever Fragnance, Kannauj</p>
                           <p>
                             Destination: {order.shippingAddress.address},
                             {order.shippingAddress.city},{" "}
